@@ -22,7 +22,7 @@ class ProjectList {
         new ProjectItem(item.id, this.switchProject.bind(this), this.type)
       );
     }
-    // console.log(this.projects);
+    console.log(this.projects);
   }
 
   setSwitchHandler(switchHandler) {
@@ -56,6 +56,7 @@ class ProjectItem {
 
   constructor(projectId, updateProjectListHandler, type) {
     this.id = projectId;
+    this.type = type;
     this.updateProjectListHandler = updateProjectListHandler;
     this.findMoreInfoButton();
     this.findSwitchButton(type);
@@ -64,6 +65,7 @@ class ProjectItem {
   update(updateProjectListFunction) {
     this.updateProjectListHandler = updateProjectListFunction;
     // this.findSwitchButton();
+    this.type = this.type === 'active' ? 'finished' : 'active';
   }
 
   changeStateToolTip() {
@@ -76,9 +78,14 @@ class ProjectItem {
     if (this.hasOpennedToolTip) {
       return;
     }
-    const toolTip = new ToolTip(this.changeStateToolTip.bind(this));
+    const hostElementId = `${this.type}-projects`;
+    const toolTip = new ToolTip(
+      this.changeStateToolTip.bind(this),
+      hostElementId
+    );
 
-    toolTip.attach();
+    // toolTip.attach();
+    toolTip.create();
 
     this.changeStateToolTip();
   }
@@ -126,9 +133,12 @@ class DOMHelper {
   }
 }
 
-class ToolTip {
-  constructor(changeStateInfoFn) {
-    this.changeStateInfo = changeStateInfoFn;
+class Component {
+  constructor(hostElementId) {
+    // this.hostElement = document.getElementById(hostElementId);
+    this.hostElement = hostElementId
+      ? document.getElementById(hostElementId)
+      : document.body;
   }
 
   detach() {
@@ -137,12 +147,25 @@ class ToolTip {
   }
 
   attach() {
+    // document.body.append(this.element);
+
+    this.hostElement.insertAdjacentElement('beforeend', this.element);
+  }
+}
+
+class ToolTip extends Component {
+  constructor(changeStateInfoFn, hostElementId) {
+    super(hostElementId);
+    this.changeStateInfo = changeStateInfoFn;
+  }
+
+  create() {
     const infoElement = document.createElement('div');
     infoElement.className = 'card';
     infoElement.textContent = 'dummy!';
     infoElement.addEventListener('click', this.detach.bind(this));
     this.element = infoElement;
-    document.body.append(infoElement);
+    this.attach();
   }
 }
 
