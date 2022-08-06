@@ -79,20 +79,23 @@ class ProjectItem {
       return;
     }
     const hostElementId = `${this.type}-projects`;
+    const projectItemElement = document.getElementById(this.id);
     const toolTip = new ToolTip(
       this.changeStateToolTip.bind(this),
-      hostElementId
+      hostElementId,
+      projectItemElement
     );
 
-    // toolTip.attach();
     toolTip.create();
 
     this.changeStateToolTip();
   }
 
   findMoreInfoButton() {
-    let moreInfoButton = document.querySelector(
-      `#${this.id} button:first-of-type`
+    let projectListItemElement = document.getElementById(this.id);
+
+    let moreInfoButton = projectListItemElement.querySelector(
+      'button:first-of-type'
     );
 
     moreInfoButton.addEventListener('click', this.showMoreInfo.bind(this));
@@ -154,15 +157,17 @@ class Component {
 }
 
 class ToolTip extends Component {
-  constructor(changeStateInfoFn, hostElementId) {
+  constructor(changeStateInfoFn, hostElementId, projectItemElement) {
     super(hostElementId);
     this.changeStateInfo = changeStateInfoFn;
+
+    this.text = projectItemElement.dataset.extraInfo;
   }
 
   create() {
     const infoElement = document.createElement('div');
     infoElement.className = 'card';
-    infoElement.textContent = 'dummy!';
+    infoElement.textContent = this.text;
     infoElement.addEventListener('click', this.detach.bind(this));
     this.element = infoElement;
     this.attach();
