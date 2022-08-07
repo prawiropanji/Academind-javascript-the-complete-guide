@@ -8,6 +8,18 @@ class App {
     finishedProjects.setSwitchHandler(
       activeProjects.addProject.bind(activeProjects)
     );
+
+    document
+      .querySelector('footer button')
+      .addEventListener('click', App.loadSomeScript);
+  }
+
+  static loadSomeScript() {
+    const someScript = document.createElement('script');
+    someScript.src = 'assets/scripts/analytic.js';
+    someScript.defer = true;
+
+    document.head.appendChild(someScript);
   }
 }
 
@@ -155,25 +167,28 @@ class Component {
     this.hostElement.parentElement.scrollTo({
       top: yScroll,
       left: 0,
+      behavior: 'smooth',
     });
 
+    setTimeout(() => {
+      const projectElPosTop = this.hostElement.offsetTop;
+      const projectElPosLeft = this.hostElement.offsetLeft;
+      const projectElHeight = this.hostElement.offsetHeight;
+      const hostElementScrolling = this.hostElement.parentElement.scrollTop;
+
+      console.log(hostElementScrolling);
+
+      this.element.style.position = 'absolute';
+      this.element.style.top = `${
+        projectElPosTop + projectElHeight - 10 - hostElementScrolling
+      }px`;
+      this.element.style.left = `${projectElPosLeft + 16}px`;
+      this.element.style.position = 'absolute';
+
+      this.hostElement.appendChild(this.element);
+    }, 500);
+
     // this.hostElement.scrollIntoView();
-
-    const projectElPosTop = this.hostElement.offsetTop;
-    const projectElPosLeft = this.hostElement.offsetLeft;
-    const projectElHeight = this.hostElement.offsetHeight;
-    const hostElementScrolling = this.hostElement.parentElement.scrollTop;
-
-    console.log(hostElementScrolling);
-
-    this.element.style.position = 'absolute';
-    this.element.style.top = `${
-      projectElPosTop + projectElHeight - 10 - hostElementScrolling
-    }px`;
-    this.element.style.left = `${projectElPosLeft + 16}px`;
-    this.element.style.position = 'absolute';
-
-    this.hostElement.appendChild(this.element);
   }
 }
 
