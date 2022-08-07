@@ -78,7 +78,7 @@ class ProjectItem {
     if (this.hasOpennedToolTip) {
       return;
     }
-    const hostElementId = `${this.type}-projects`;
+    const hostElementId = this.id;
     const projectItemElement = document.getElementById(this.id);
     const toolTip = new ToolTip(
       this.changeStateToolTip.bind(this),
@@ -142,6 +142,8 @@ class Component {
     this.hostElement = hostElementId
       ? document.getElementById(hostElementId)
       : document.body;
+
+    console.log(this.hostElement);
   }
 
   detach() {
@@ -150,9 +152,19 @@ class Component {
   }
 
   attach() {
-    // document.body.append(this.element);
+    const projectElPosTop = this.hostElement.offsetTop;
+    const projectElPosLeft = this.hostElement.offsetLeft;
+    const projectElHeight = this.hostElement.offsetHeight;
+    const hostElementScrolling = this.hostElement.parentElement.scrollTop;
 
-    this.hostElement.insertAdjacentElement('beforeend', this.element);
+    this.element.style.position = 'absolute';
+    this.element.style.top = `${
+      projectElPosTop + projectElHeight - 10 - hostElementScrolling
+    }px`;
+    this.element.style.left = `${projectElPosLeft + 16}px`;
+    this.element.style.position = 'absolute';
+
+    this.hostElement.appendChild(this.element);
   }
 }
 
@@ -161,7 +173,7 @@ class ToolTip extends Component {
     super(hostElementId);
     this.changeStateInfo = changeStateInfoFn;
 
-    this.text = projectItemElement.dataset.extraInfo;
+    this.text = this.hostElement.dataset.extraInfo;
   }
 
   create() {
