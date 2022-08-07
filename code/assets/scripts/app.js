@@ -22,7 +22,6 @@ class ProjectList {
         new ProjectItem(item.id, this.switchProject.bind(this), this.type)
       );
     }
-    console.log(this.projects);
   }
 
   setSwitchHandler(switchHandler) {
@@ -35,8 +34,6 @@ class ProjectList {
       this.projects.find((project) => project.id === projectId)
     );
     this.projects = this.projects.filter((project) => project.id !== projectId);
-
-    // console.log(this.projects);
   }
 
   addProject(project) {
@@ -69,9 +66,7 @@ class ProjectItem {
   }
 
   changeStateToolTip() {
-    console.log(this.hasOpennedToolTip);
     this.hasOpennedToolTip = this.hasOpennedToolTip ? false : true;
-    console.log(this.hasOpennedToolTip);
   }
 
   showMoreInfo() {
@@ -79,11 +74,10 @@ class ProjectItem {
       return;
     }
     const hostElementId = this.id;
-    const projectItemElement = document.getElementById(this.id);
+
     const toolTip = new ToolTip(
       this.changeStateToolTip.bind(this),
-      hostElementId,
-      projectItemElement
+      hostElementId
     );
 
     toolTip.create();
@@ -142,8 +136,6 @@ class Component {
     this.hostElement = hostElementId
       ? document.getElementById(hostElementId)
       : document.body;
-
-    console.log(this.hostElement);
   }
 
   detach() {
@@ -152,10 +144,27 @@ class Component {
   }
 
   attach() {
+    // this.hostElement.scrollIntoView({ behavior: 'smooth' });
+    // this.hostElement.parentElement.scrollTo(0, 50);
+
+    const yProjectList = this.hostElement.parentElement.offsetTop;
+    const yprojectItem = this.hostElement.offsetTop;
+
+    const yScroll = yprojectItem - yProjectList;
+
+    this.hostElement.parentElement.scrollTo({
+      top: yScroll,
+      left: 0,
+    });
+
+    // this.hostElement.scrollIntoView();
+
     const projectElPosTop = this.hostElement.offsetTop;
     const projectElPosLeft = this.hostElement.offsetLeft;
     const projectElHeight = this.hostElement.offsetHeight;
     const hostElementScrolling = this.hostElement.parentElement.scrollTop;
+
+    console.log(hostElementScrolling);
 
     this.element.style.position = 'absolute';
     this.element.style.top = `${
@@ -169,7 +178,7 @@ class Component {
 }
 
 class ToolTip extends Component {
-  constructor(changeStateInfoFn, hostElementId, projectItemElement) {
+  constructor(changeStateInfoFn, hostElementId) {
     super(hostElementId);
     this.changeStateInfo = changeStateInfoFn;
 
@@ -179,7 +188,12 @@ class ToolTip extends Component {
   create() {
     const infoElement = document.createElement('div');
     infoElement.className = 'card';
-    infoElement.textContent = this.text;
+    // infoElement.textContent = this.text;
+    const toolTipFragment = document.getElementById('tooltip-template').content;
+    const toolTipFragmentCopy = document.importNode(toolTipFragment, true);
+    toolTipFragmentCopy.querySelector('p').textContent = this.text;
+    infoElement.append(toolTipFragmentCopy);
+
     infoElement.addEventListener('click', this.detach.bind(this));
     this.element = infoElement;
     this.attach();
