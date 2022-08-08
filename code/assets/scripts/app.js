@@ -9,9 +9,11 @@ class App {
       activeProjects.addProject.bind(activeProjects)
     );
 
-    document
-      .querySelector('footer button')
-      .addEventListener('click', App.loadSomeScript);
+    setTimeout(App.loadSomeScript, 3000);
+
+    document.querySelector('footer button').addEventListener('click', () => {
+      clearInterval(intervalId);
+    });
   }
 
   static loadSomeScript() {
