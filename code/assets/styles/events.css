@@ -4,6 +4,7 @@ body {
 }
 
 div {
+  width: 1000px;
   border: 1px solid #ccc;
   padding: 1.5rem 3rem;
 }
@@ -34,4 +35,18 @@ button:active {
   background: #e92f6d;
   border-color: #e92f6d;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.26);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 1rem;
+  border: 1px solid black;
+}
+
+.highlight {
+  background-color: red;
 }
