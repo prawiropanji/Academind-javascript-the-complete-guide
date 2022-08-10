@@ -14,14 +14,14 @@ const clickHandler = (event) => {
 const section = document.querySelector('section');
 const div = document.querySelector('div');
 
-// button.addEventListener('click', function (event) {
-//   console.log(event);
-//   console.log('clicked from button');
-//   event.stopPropagation();
-// });
+button.addEventListener('click', function (event) {
+  console.log(event.target);
+  console.log('clicked from button');
+  event.stopPropagation();
+});
 
 section.addEventListener('click', (event) => {
-  //   console.dir(event.target);
+  console.dir(event.target);
   //   console.log(event.currentTarget);
   console.log('clicked from section');
 
@@ -29,6 +29,7 @@ section.addEventListener('click', (event) => {
 
   if (event.target.closest('li')) {
     event.target.closest('li').classList.toggle('highlight');
+    button.click();
   }
 });
 
