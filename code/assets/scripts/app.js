@@ -84,9 +84,11 @@ class ProjectItem {
     this.updateProjectListsHandler = updateProjectListsFunction;
     this.connectMoreInfoButton();
     this.connectSwitchButton(type);
+    this.connectDraggable();
   }
 
   showMoreInfoHandler() {
+    console.log(event);
     if (this.hasActiveTooltip) {
       return;
     }
@@ -103,12 +105,29 @@ class ProjectItem {
     this.hasActiveTooltip = true;
   }
 
+  connectDraggable() {
+    const listItem = document.getElementById(this.id);
+    listItem.draggable = true;
+    listItem.addEventListener('dragstart', (event) => {
+      // console.log(event.target.id);
+      event.dataTransfer.setData('text/plain', this.id);
+      event.dataTransfer.effectAllowed = 'move';
+    });
+
+    listItem.addEventListener('dragend', (event) => {
+      console.log(event);
+    });
+  }
+
   connectMoreInfoButton() {
     const projectItemElement = document.getElementById(this.id);
     const moreInfoBtn = projectItemElement.querySelector(
       'button:first-of-type'
     );
-    moreInfoBtn.addEventListener('click', this.showMoreInfoHandler.bind(this));
+    moreInfoBtn.addEventListener(
+      'click',
+      this.showMoreInfoHandler.bind(this, event)
+    );
   }
 
   connectSwitchButton(type) {
@@ -140,6 +159,43 @@ class ProjectList {
       );
     }
     console.log(this.projects);
+    this.connectDropZone();
+  }
+
+  connectDropZone() {
+    const list = document.querySelector(`#${this.type}-projects ul`);
+    list.addEventListener('dragover', (event) => {
+      event.preventDefault();
+    });
+
+    list.addEventListener('dragenter', (event) => {
+      event.preventDefault();
+
+      list.parentElement.classList.add('dropable');
+    });
+
+    list.addEventListener('dragleave', (event) => {
+      console.log(
+        'target',
+        event.target,
+        'related target',
+        event.relatedTarget
+      );
+      if (event.relatedTarget.closest('ul') === null) {
+        list.parentElement.classList.remove('dropable');
+      }
+    });
+
+    list.addEventListener('drop', (event) => {
+      list.parentElement.classList.remove('dropable');
+      const dragProjectId = event.dataTransfer.getData('text/plain');
+      if (this.projects.find((prj) => prj.id === dragProjectId)) {
+        return;
+      }
+
+      console.log(document.getElementById(dragProjectId));
+      document.querySelector(`#${dragProjectId} button:last-of-type`).click();
+    });
   }
 
   setSwitchHandlerFunction(switchHandlerFunction) {
@@ -155,8 +211,8 @@ class ProjectList {
   switchProject(projectId) {
     // const projectIndex = this.projects.findIndex(p => p.id === projectId);
     // this.projects.splice(projectIndex, 1);
-    this.switchHandler(this.projects.find(p => p.id === projectId));
-    this.projects = this.projects.filter(p => p.id !== projectId);
+    this.switchHandler(this.projects.find((p) => p.id === projectId));
+    this.projects = this.projects.filter((p) => p.id !== projectId);
   }
 }
 
@@ -171,11 +227,13 @@ class App {
       activeProjectsList.addProject.bind(activeProjectsList)
     );
 
-    const timerId = setTimeout(this.startAnalytics, 3000);
+    // const timerId = setTimeout(this.startAnalytics, 3000);
 
-    document.getElementById('stop-analytics-btn').addEventListener('click', () => {
-      clearTimeout(timerId);
-    });
+    document
+      .getElementById('stop-analytics-btn')
+      .addEventListener('click', () => {
+        clearTimeout(timerId);
+      });
   }
 
   static startAnalytics() {
