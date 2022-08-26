@@ -17,7 +17,12 @@ function sendHttpRequest(url, method, data) {
 
   // return promise;
 
-  return fetch(url, { method: method, body: JSON.stringify(data) });
+  return fetch(url, {
+    method: method,
+    // body: JSON.stringify(data),
+    body: data,
+    // headers: { 'Content-Type': 'application/json' },
+  });
 }
 
 let deletePost = (id) => {
@@ -30,6 +35,8 @@ let fetchPost = async () => {
       'https://jsonplaceholder.typicode.com/pos'
     );
     if (!responseObj.ok) {
+      const response = await responseObj.json();
+      console.log(response);
       throw new Error('location not found');
     }
     const response = await responseObj.json();
@@ -60,16 +67,21 @@ listPostsElement.addEventListener('click', (event) => {
   }
 });
 
-let createPost = async (title, body) => {
-  let dataPayload = {
-    id: (Math.random() * 1000000).toFixed(),
-    title: title,
-    body: body,
-  };
+let createPost = async () => {
+  let formData = new FormData(addPostForm);
+  formData.append('id', Math.random());
+
+  console.log(formData.get('title'));
+
+  // let dataPayload = {
+  //   id: (Math.random() * 1000000).toFixed(),
+  //   title: title,
+  //   body: body,
+  // };
   let res = await sendHttpRequest(
     'https://jsonplaceholder.typicode.com/posts',
     'POST',
-    dataPayload
+    formData
   );
 };
 
@@ -80,8 +92,9 @@ const addPostForm = document.querySelector('#new-post form');
 addPostForm.addEventListener('submit', (e) => {
   console.log(e);
   e.preventDefault();
-  let formData = new FormData(addPostForm);
-  let title = formData.get('title');
-  let body = formData.get('content');
-  createPost(title, body);
+  // let formData = new FormData(addPostForm);
+  // let title = formData.get('title');
+  // let body = formData.get('content');
+  // createPost(title, body);
+  createPost();
 });
