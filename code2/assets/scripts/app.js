@@ -26,21 +26,27 @@ function sendHttpRequest(url, method, data) {
 }
 
 let deletePost = (id) => {
-  sendHttpRequest(`https://jsonplaceholder.typicode.com/posts/${id}`, 'DELETE');
+  axios.delete(`https://jsonplaceholder.typicode.com/posts/${id}`, 'DELETE');
 };
 
 let fetchPost = async () => {
   try {
-    const responseObj = await sendHttpRequest(
-      'https://jsonplaceholder.typicode.com/pos'
+    // const responseObj = await sendHttpRequest(
+    //   'https://jsonplaceholder.typicode.com/posts'
+    // );
+
+    const response = await axios.get(
+      'https://jsonplaceholder.typicode.com/posts'
     );
-    if (!responseObj.ok) {
+    console.log(response);
+
+    if (response.status >= 300) {
       const response = await responseObj.json();
       console.log(response);
       throw new Error('location not found');
     }
-    const response = await responseObj.json();
-    const listPosts = response;
+    // const response = await responseObj.json();
+    const listPosts = response.data;
     for (const post of listPosts) {
       const postItemElement = document.importNode(
         templateListItemElement.content,
@@ -78,9 +84,14 @@ let createPost = async () => {
   //   title: title,
   //   body: body,
   // };
-  let res = await sendHttpRequest(
+  // let res = await sendHttpRequest(
+  //   'https://jsonplaceholder.typicode.com/posts',
+  //   'POST',
+  //   formData
+  // );
+
+  let res = await axios.post(
     'https://jsonplaceholder.typicode.com/posts',
-    'POST',
     formData
   );
 };
